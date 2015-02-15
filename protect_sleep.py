@@ -1,41 +1,50 @@
 #!/usr/bin/python
-import subprocess
+#
+# main script for using protect_sleep, providing the whole functionality
 import time
 
-#subprocess.check_output(['echo','Hello World'], universal_newlines=True)
-#subprocess.call(['espeak','Hello, how are you?'])
-#time.strftime('%A(%w) %H:%M')
-
-#setup (windows and stuff)
-##commands on different os
-###message on screen
-###sound
-def read_message(text='deadline close'):
-    subprocess.call(['espeak',text])
-###get process list
-def get_processes():
-    return ['firefox', 'bash', 'bash']
-###?sleep
-
 ##policies -> per weekday and deadline correction for different programms
-daily_deadlines = {'Monday': '24:00', 'Thuesday': '1:00', 'Wendsday': '1:00', 'Thursday': '1:00', 'Friday': '1:00', 'Saturday': '2:00', 'Sunday': '1:00'}
-programm_adjustments = [('firefox','firefox', 5), ('flash','flashplugin',10)]
-sleep_minutes=5
+#daily_deadlines = {'Monday': '24:00', 'Thuesday': '1:00', 'Wendsday': '1:00', 'Thursday': '1:00', 'Friday': '1:00', 'Saturday': '2:00', 'Sunday': '1:00'}
+deadline = { 'today': '23:00' }
+sleep_minutes = 5
 
-##windows
+def notify_user():
+    print("hey man, go to sleep")
 
-#mainloop
-while(True):
-##checking for deadlines
-    curr_time = time.strftime('%H:%M')
-    curr_processes = get_processes()
-    deadline = closestDeadline(curr_processes, programm_adjustments)
-    if(deadline < curr_time):
-        deadline_broken = True
+def is_deadline_broken(dl_t, c_t):
+    """
+    return True if the time given by dl_t is smaller than the time c_t
 
-##if deadline is broken, notify the user
-    if(deadline_broken):
-        notify_user()
+    format of dl_t and c_t: 'HH:MM'
+    """
+    #TODO need to think about handling the edge case 24:00
+    dl_t = dl_t.split(':')
+    c_t = c_t.split(':')
 
-#sleep and wait for configured number of minutes
-    time.sleep(sleep_minutes*60)
+    if( int(dl_t[0]) < int(c_t[0]) ):
+        return True
+    elif( int(dl_t[0]) == int(c_t[0]) and int(dl_t[1]) <= int(c_t[1]) ):
+        return True
+    else:
+        return False
+
+if __name__ == '__main__':
+    #mainloop
+    while(True):
+        #checking for deadlines
+        curr_day = time.strftime('%w')
+        if( deadline['today'] ): #|| deadline[curr_day]):
+        #if we have a deadline for today
+            deadline_time = deadline['today'] #deadline[curr_day]
+            current_time = time.strftime('%H:%M')
+
+            if( is_deadline_broken(deadline_time, current_time) ):
+                deadline_broken = True
+                sleep_minutes = 1
+
+    ##if deadline is broken, notify the user
+        if(deadline_broken):
+            notify_user()
+
+    #sleep and wait for configured number of minutes
+        time.sleep(sleep_minutes*60)
