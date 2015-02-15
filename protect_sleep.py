@@ -30,9 +30,12 @@ def is_deadline_broken(dl_t, c_t):
 
 if __name__ == '__main__':
     #mainloop
+    deadline_broken = False
+
     while(True):
         #checking for deadlines
         curr_day = time.strftime('%w')
+
         if( deadline['today'] ): #|| deadline[curr_day]):
         #if we have a deadline for today
             deadline_time = deadline['today'] #deadline[curr_day]
