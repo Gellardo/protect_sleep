@@ -1,0 +1,4 @@
+fix the calcualtation for the deadline breach to work in the morning at the next day
+add adjustments to deadline breach (based on open programms)
+add more notifining methods: speech, popups, annoying sounds? (configureable?)
+make it windows compatible
