@@ -4,7 +4,7 @@
 import time
 
 ##policies -> per weekday and deadline correction for different programms
-#daily_deadlines = {'Monday': '24:00', 'Thuesday': '1:00', 'Wendsday': '1:00', 'Thursday': '1:00', 'Friday': '1:00', 'Saturday': '2:00', 'Sunday': '1:00'}
+daily_deadlines = {'1': '23:00', '2': '23:00', '3': '23:00', '4': '23:00', '5': '23:00', '6': '23:00', '0': '23:00'}
 deadline = { 'today': '23:00' }
 sleep_minutes = 5
 
@@ -36,9 +36,10 @@ if __name__ == '__main__':
         #checking for deadlines
         curr_day = time.strftime('%w')
 
-        if( deadline['today'] ): #|| deadline[curr_day]):
+        if( daily_deadlines[curr_day] ):
         #if we have a deadline for today
-            deadline_time = deadline['today'] #deadline[curr_day]
+            deadline_time = daily_deadlines[curr_day]
+            print(deadline_time)
             current_time = time.strftime('%H:%M')
 
             if( is_deadline_broken(deadline_time, current_time) ):
