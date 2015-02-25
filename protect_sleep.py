@@ -5,28 +5,32 @@ import time
 
 ##policies -> per weekday and deadline correction for different programms
 daily_deadlines = {'1': '23:00', '2': '23:00', '3': '23:00', '4': '23:00', '5': '23:00', '6': '23:00', '0': '23:00'}
-deadline = { 'today': '23:00' }
 sleep_minutes = 5
 
 def notify_user():
     print("hey man, go to sleep")
 
-def is_deadline_broken(dl_t, c_t):
+def is_deadline_broken(deadlines, c_d, c_t):
     """
-    return True if the time given by dl_t is smaller than the time c_t
+    return True if the time c_t lies within a 4 hours time window after
+    one of the deadlines of dl_t
 
-    format of dl_t and c_t: 'HH:MM'
+    format of deadlines: { 'D':'HH:MM' }
+    format of c_d, c_t: 'D', 'HH:MM'
     """
-    #TODO need to think about handling the edge case 24:00
-    dl_t = dl_t.split(':')
     c_t = c_t.split(':')
+    c_t = int(c_t[0])*60 + int(c_t[1])
 
-    if( int(dl_t[0]) < int(c_t[0]) ):
-        return True
-    elif( int(dl_t[0]) == int(c_t[0]) and int(dl_t[1]) <= int(c_t[1]) ):
-        return True
-    else:
-        return False
+    #loop to check the current day and the day before
+    for i in [0,1]:
+        dl_t = deadlines[str( (int(c_d)-i)%7 )]
+        dl_t = dl_t.split(':')
+        #correct the minute representation of the time depending on the day modification
+        dl_t = int(dl_t[0])*60 + int(dl_t[1]) - i*24*60
+
+        if( dl_t < c_t and dl_t+4*60 > c_t ):
+            return True
+    return False
 
 if __name__ == '__main__':
     #mainloop
@@ -38,11 +42,9 @@ if __name__ == '__main__':
 
         if( daily_deadlines[curr_day] ):
         #if we have a deadline for today
-            deadline_time = daily_deadlines[curr_day]
-            print(deadline_time)
             current_time = time.strftime('%H:%M')
 
-            if( is_deadline_broken(deadline_time, current_time) ):
+            if( is_deadline_broken(daily_deadlines, curr_day, current_time) ):
                 deadline_broken = True
                 sleep_minutes = 1
 
